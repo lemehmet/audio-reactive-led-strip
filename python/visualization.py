@@ -7,6 +7,7 @@ import config
 import microphone
 import dsp
 import led
+from math import floor
 
 _time_prev = time.time() * 1000.0
 """The previous time that the frames_per_second() function was called"""
