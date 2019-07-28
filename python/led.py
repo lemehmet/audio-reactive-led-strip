@@ -14,7 +14,6 @@ elif config.DEVICE == 'pi':
     import board
     import neopixel
     strip = neopixel.NeoPixel(board.D18, config.N_PIXELS, brightness=0.9, auto_write=False, pixel_order=neopixel.GRBW)
-    strip.begin()
 elif config.DEVICE == 'blinkstick':
     from blinkstick import blinkstick
     import signal
