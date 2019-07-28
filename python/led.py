@@ -102,7 +102,7 @@ def _update_pi():
         # Ignore pixels if they haven't changed (saves bandwidth)
         if np.array_equal(p[:, i], _prev_pixels[:, i]):
             continue
-        strip._led_data[i] = rgb[i]
+        strip[i] = (r, g, b, 0)
     _prev_pixels = np.copy(p)
     strip.show()
 
