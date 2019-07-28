@@ -3,7 +3,7 @@ from __future__ import print_function
 from __future__ import division
 import os
 
-DEVICE = 'esp8266'
+DEVICE = 'pi'
 """Device used to control LED strip. Must be 'pi',  'esp8266' or 'blinkstick'
 
 'esp8266' means that you are using an ESP8266 module to control the LED strip
@@ -17,6 +17,8 @@ to control the leds connected to it.
 """
 
 if DEVICE == 'esp8266':
+    INPUT_DEVICE_INDEX = 0
+    """Microphone device"""
     UDP_IP = '192.168.0.150'
     """IP address of the ESP8266. Must match IP in ws2812_controller.ino"""
     UDP_PORT = 7777
@@ -25,6 +27,8 @@ if DEVICE == 'esp8266':
     """Set to False because the firmware handles gamma correction + dither"""
 
 if DEVICE == 'pi':
+    INPUT_DEVICE_INDEX = 1
+    """Microphone device"""
     LED_PIN = 18
     """GPIO pin connected to the LED strip pixels (must support PWM)"""
     LED_FREQ_HZ = 800000
@@ -42,19 +46,19 @@ if DEVICE == 'blinkstick':
     SOFTWARE_GAMMA_CORRECTION = True
     """Set to True because blinkstick doesn't use hardware dithering"""
 
-USE_GUI = True
+USE_GUI = False
 """Whether or not to display a PyQtGraph GUI plot of visualization"""
 
 DISPLAY_FPS = True
 """Whether to display the FPS when running (can reduce performance)"""
 
-N_PIXELS = 60
+N_PIXELS = 144
 """Number of pixels in the LED strip (must match ESP8266 firmware)"""
 
 GAMMA_TABLE_PATH = os.path.join(os.path.dirname(__file__), 'gamma_table.npy')
 """Location of the gamma correction table"""
 
-MIC_RATE = 44100
+MIC_RATE = 48000
 """Sampling frequency of the microphone in Hz"""
 
 FPS = 60
@@ -76,13 +80,13 @@ depends on how long the LED strip is.
 _max_led_FPS = int(((N_PIXELS * 30e-6) + 50e-6)**-1.0)
 assert FPS <= _max_led_FPS, 'FPS must be <= {}'.format(_max_led_FPS)
 
-MIN_FREQUENCY = 200
+MIN_FREQUENCY = 24
 """Frequencies below this value will be removed during audio processing"""
 
-MAX_FREQUENCY = 12000
+MAX_FREQUENCY = 4200
 """Frequencies above this value will be removed during audio processing"""
 
-N_FFT_BINS = 24
+N_FFT_BINS = 88
 """Number of frequency bins to use when transforming audio to frequency domain
 
 Fast Fourier transforms are used to transform time-domain audio data to the

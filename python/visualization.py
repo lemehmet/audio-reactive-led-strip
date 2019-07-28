@@ -6,7 +6,7 @@ from scipy.ndimage.filters import gaussian_filter1d
 import config
 import microphone
 import dsp
-import led
+#import led
 
 _time_prev = time.time() * 1000.0
 """The previous time that the frames_per_second() function was called"""
@@ -200,8 +200,8 @@ def microphone_update(audio_samples):
     vol = np.max(np.abs(y_data))
     if vol < config.MIN_VOLUME_THRESHOLD:
         print('No audio input. Volume below threshold. Volume:', vol)
-        led.pixels = np.tile(0, (3, config.N_PIXELS))
-        led.update()
+        #led.pixels = np.tile(0, (3, config.N_PIXELS))
+        #led.update()
     else:
         # Transform audio input into the frequency domain
         N = len(y_data)
@@ -222,16 +222,19 @@ def microphone_update(audio_samples):
         mel = mel_smoothing.update(mel)
         # Map filterbank output onto LED strip
         output = visualization_effect(mel)
-        led.pixels = output
-        led.update()
+#        led.pixels = output
+#        led.update()
         if config.USE_GUI:
             # Plot filterbank output
             x = np.linspace(config.MIN_FREQUENCY, config.MAX_FREQUENCY, len(mel))
             mel_curve.setData(x=x, y=fft_plot_filter.update(mel))
             # Plot the color channels
-            r_curve.setData(y=led.pixels[0])
-            g_curve.setData(y=led.pixels[1])
-            b_curve.setData(y=led.pixels[2])
+#            r_curve.setData(y=led.pixels[0])
+#            g_curve.setData(y=led.pixels[1])
+#            b_curve.setData(y=led.pixels[2])
+            r_curve.setData(y=output[0])
+            g_curve.setData(y=output[1])
+            b_curve.setData(y=output[2])
     if config.USE_GUI:
         app.processEvents()
     
@@ -351,6 +354,6 @@ if __name__ == '__main__':
         layout.addItem(scroll_label)
         layout.addItem(spectrum_label)
     # Initialize LEDs
-    led.update()
+    # led.update()
     # Start listening to live audio stream
     microphone.start_stream(microphone_update)
