@@ -6,7 +6,7 @@ from scipy.ndimage.filters import gaussian_filter1d
 import config
 import microphone
 import dsp
-#import led
+import led
 
 _time_prev = time.time() * 1000.0
 """The previous time that the frames_per_second() function was called"""
@@ -170,14 +170,10 @@ def visualize_spectrum(y):
     return output
 
 
-fft_plot_filter = dsp.ExpFilter(np.tile(1e-1, config.N_FFT_BINS),
-                         alpha_decay=0.5, alpha_rise=0.99)
-mel_gain = dsp.ExpFilter(np.tile(1e-1, config.N_FFT_BINS),
-                         alpha_decay=0.01, alpha_rise=0.99)
-mel_smoothing = dsp.ExpFilter(np.tile(1e-1, config.N_FFT_BINS),
-                         alpha_decay=0.5, alpha_rise=0.99)
-volume = dsp.ExpFilter(config.MIN_VOLUME_THRESHOLD,
-                       alpha_decay=0.02, alpha_rise=0.02)
+fft_plot_filter = dsp.ExpFilter(np.tile(1e-1, config.N_FFT_BINS), alpha_decay=0.5, alpha_rise=0.99)
+mel_gain = dsp.ExpFilter(np.tile(1e-1, config.N_FFT_BINS), alpha_decay=0.01, alpha_rise=0.99)
+mel_smoothing = dsp.ExpFilter(np.tile(1e-1, config.N_FFT_BINS), alpha_decay=0.5, alpha_rise=0.99)
+volume = dsp.ExpFilter(config.MIN_VOLUME_THRESHOLD, alpha_decay=0.02, alpha_rise=0.02)
 fft_window = np.hamming(int(config.MIC_RATE / config.FPS) * config.N_ROLLING_HISTORY)
 prev_fps_update = time.time()
 
@@ -194,8 +190,8 @@ def microphone_update(audio_samples):
     vol = np.max(np.abs(y_data))
     if vol < config.MIN_VOLUME_THRESHOLD:
         print('No audio input. Volume below threshold. Volume:', vol)
-        #led.pixels = np.tile(0, (3, config.N_PIXELS))
-        #led.update()
+        led.pixels = np.tile(0, (3, config.N_PIXELS))
+        led.update()
     else:
         # Transform audio input into the frequency domain
         N = len(y_data)
@@ -216,8 +212,8 @@ def microphone_update(audio_samples):
         mel = mel_smoothing.update(mel)
         # Map filterbank output onto LED strip
         output = visualization_effect(mel)
-#        led.pixels = output
-#        led.update()
+        led.pixels = output
+        led.update()
         if config.USE_GUI:
             # Plot filterbank output
             x = np.linspace(config.MIN_FREQUENCY, config.MAX_FREQUENCY, len(mel))
@@ -348,6 +344,6 @@ if __name__ == '__main__':
         layout.addItem(scroll_label)
         layout.addItem(spectrum_label)
     # Initialize LEDs
-    # led.update()
+    led.update()
     # Start listening to live audio stream
     microphone.start_stream(microphone_update)
