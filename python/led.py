@@ -11,8 +11,9 @@ if config.DEVICE == 'esp8266':
     _sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 # Raspberry Pi controls the LED strip directly
 elif config.DEVICE == 'pi':
+    import board
     import neopixel
-    strip = neopixel.NeoPixel(config.LED_PIN, config.N_PIXELS, brightness=0.9, auto_write=False, pixel_order=neopixel.GRBW)
+    strip = neopixel.NeoPixel(board.D18, config.N_PIXELS, brightness=0.9, auto_write=False, pixel_order=neopixel.GRBW)
     strip.begin()
 elif config.DEVICE == 'blinkstick':
     from blinkstick import blinkstick
