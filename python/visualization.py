@@ -178,10 +178,8 @@ volume = dsp.ExpFilter(config.MIN_VOLUME_THRESHOLD, alpha_decay=0.02, alpha_rise
 fft_window = np.hamming(int(config.MIC_RATE / config.FPS) * config.N_ROLLING_HISTORY)
 prev_fps_update = time.time()
 
-n_frame = 0
-
 def microphone_update(audio_samples):
-    global y_roll, prev_rms, prev_exp, prev_fps_update
+    global y_roll, prev_rms, prev_exp, prev_fps_update, n_frame
     # Normalize samples between 0 and 1
     y = audio_samples / 2.0**15
     # Construct a rolling window of audio samples
@@ -248,6 +246,8 @@ visualization_effect = visualize_spectrum
 effects = [visualize_spectrum, visualize_energy, visualize_scroll]
 """Visualization effect to display on the LED strip"""
 
+
+n_frame = 0
 
 if __name__ == '__main__':
     if config.USE_GUI:
