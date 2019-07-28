@@ -4,6 +4,7 @@ from __future__ import division
 import platform
 import numpy as np
 import config
+from math import floor
 
 # ESP8266 uses WiFi communication
 if config.DEVICE == 'esp8266':
@@ -102,7 +103,9 @@ def _update_pi():
         # Ignore pixels if they haven't changed (saves bandwidth)
         if np.array_equal(p[:, i], _prev_pixels[:, i]):
             continue
-        strip[i] = (r, g, b, 0)
+        strip[i] = (r[i] if r[i] < 256 else 255,
+        		g[i] if g[i] < 255 else 255,
+        		b[i] if b[i] < 255 else 255, 0)
     _prev_pixels = np.copy(p)
     strip.show()
 
