@@ -61,7 +61,7 @@ GAMMA_TABLE_PATH = os.path.join(os.path.dirname(__file__), 'gamma_table.npy')
 MIC_RATE = 48000
 """Sampling frequency of the microphone in Hz"""
 
-FPS = 60
+FPS = 40
 """Desired refresh rate of the visualization (frames per second)
 
 FPS indicates the desired refresh rate, or frames-per-second, of the audio
@@ -80,13 +80,13 @@ depends on how long the LED strip is.
 _max_led_FPS = int(((N_PIXELS * 30e-6) + 50e-6)**-1.0)
 assert FPS <= _max_led_FPS, 'FPS must be <= {}'.format(_max_led_FPS)
 
-MIN_FREQUENCY = 24
+MIN_FREQUENCY = 200
 """Frequencies below this value will be removed during audio processing"""
 
 MAX_FREQUENCY = 4200
 """Frequencies above this value will be removed during audio processing"""
 
-N_FFT_BINS = 88
+N_FFT_BINS = 144
 """Number of frequency bins to use when transforming audio to frequency domain
 
 Fast Fourier transforms are used to transform time-domain audio data to the
