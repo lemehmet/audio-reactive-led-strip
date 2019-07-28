@@ -12,9 +12,7 @@ if config.DEVICE == 'esp8266':
 # Raspberry Pi controls the LED strip directly
 elif config.DEVICE == 'pi':
     import neopixel
-    strip = neopixel.Adafruit_NeoPixel(config.N_PIXELS, config.LED_PIN,
-                                       config.LED_FREQ_HZ, config.LED_DMA,
-                                       config.LED_INVERT, config.BRIGHTNESS)
+    strip = neopixel.NeoPixel(pixel_pin, config.N_PIXELS, brightness=0.9, auto_write=False, pixel_order=neopixel.GRBW)
     strip.begin()
 elif config.DEVICE == 'blinkstick':
     from blinkstick import blinkstick
