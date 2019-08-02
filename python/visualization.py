@@ -8,6 +8,8 @@ import microphone
 import dsp
 import led
 from math import floor
+from multiprocessing import Process, Value
+import remote_control
 
 _time_prev = time.time() * 1000.0
 """The previous time that the frames_per_second() function was called"""
@@ -350,4 +352,9 @@ if __name__ == '__main__':
     # Initialize LEDs
     led.update()
     # Start listening to live audio stream
-    microphone.start_stream(microphone_update)
+    p = Process(target=microphone.start_stream, args=(microphone_update,))
+    p.start()
+    remote_control()
+    p.join()
+    # microphone.start_stream(microphone_update)
+

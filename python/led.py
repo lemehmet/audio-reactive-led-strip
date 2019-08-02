@@ -104,8 +104,10 @@ def _update_pi():
         if np.array_equal(p[:, i], _prev_pixels[:, i]):
             continue
         strip[i] = (r[i] if r[i] < 256 else 255,
-        		g[i] if g[i] < 255 else 255,
-        		b[i] if b[i] < 255 else 255, 0)
+        		    g[i] if g[i] < 255 else 255,
+        		    b[i] if b[i] < 255 else 255,
+                    255 - (((r[i] + g[i] + b[i]) / 3) % 255)
+                    )
     _prev_pixels = np.copy(p)
     strip.show()
 
