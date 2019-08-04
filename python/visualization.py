@@ -94,7 +94,7 @@ r_filt = dsp.ExpFilter(np.tile(0.01, config.N_PIXELS // 2), alpha_decay=0.2, alp
 g_filt = dsp.ExpFilter(np.tile(0.01, config.N_PIXELS // 2), alpha_decay=0.05, alpha_rise=0.3)
 b_filt = dsp.ExpFilter(np.tile(0.01, config.N_PIXELS // 2), alpha_decay=0.1, alpha_rise=0.5)
 common_mode = dsp.ExpFilter(np.tile(0.01, config.N_PIXELS // 2), alpha_decay=0.99, alpha_rise=0.01)
-p_filt = dsp.ExpFilter(np.tile(1, (3, config.N_PIXELS // 2)), alpha_decay=0.1, alpha_rise=0.99)
+p_filt = dsp.ExpFilter(np.tile(1, (4, config.N_PIXELS // 2)), alpha_decay=0.1, alpha_rise=0.99)
 p = np.tile(1.0, (4, config.N_PIXELS // 2))
 gain = dsp.ExpFilter(np.tile(0.01, config.N_FFT_BINS), alpha_decay=0.001, alpha_rise=0.99)
 
@@ -202,7 +202,7 @@ def microphone_update(audio_samples):
     vol = np.max(np.abs(y_data))
     if vol < config.MIN_VOLUME_THRESHOLD:
         print('No audio input. Volume below threshold. Volume:', vol)
-        led.pixels = np.tile(0, (3, config.N_PIXELS))
+        led.pixels = np.tile(0, (4, config.N_PIXELS))
         led.update()
     else:
         # Transform audio input into the frequency domain
