@@ -203,16 +203,13 @@ def visualize_gandalf_white(y):
 
 
 def visualize_gandalf_proud(y):
-    global gw_counter, pixels_gandalf_white
+    global gw_counter, pixels_gandalf_proud
     if gw_counter == 0:
-        wave = np.sin(np.linspace(0, np.pi, config.N_PIXELS))
-        cw = (wave * 255).astype(int)
-        ww = np.full(config.N_PIXELS, 10)
-        pixels_gandalf_white = np.array([cw, cw, cw, ww])
+        pixels_gandalf_proud = create_gradient(1, 1, 1, 1, 0.0, np.pi / 2, np.pi)
     else:
-        pixels_gandalf_white = np.roll(pixels_gandalf_white, 1, axis=1)
+        pixels_gandalf_proud = np.roll(pixels_gandalf_proud, 1, axis=1)
     gw_counter += 1
-    return pixels_gandalf_white
+    return pixels_gandalf_proud
 
 
 fft_plot_filter = dsp.ExpFilter(np.tile(1e-1, config.N_FFT_BINS), alpha_decay=0.5, alpha_rise=0.99)
@@ -288,7 +285,7 @@ samples_per_frame = int(config.MIC_RATE / config.FPS)
 y_roll = np.random.rand(config.N_ROLLING_HISTORY, samples_per_frame) / 1e16
 
 visualization_effect = visualize_spectrum
-effects = [visualize_spectrum, visualize_energy, visualize_scroll, visualize_gandalf_white]
+effects = [visualize_spectrum, visualize_energy, visualize_scroll, visualize_gandalf_white, visualize_gandalf_proud]
 """Visualization effect to display on the LED strip"""
 
 n_frame = 0
