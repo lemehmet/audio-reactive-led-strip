@@ -2,6 +2,8 @@ import json
 import os
 from time import sleep
 
+from visualization import select_new_visualization
+
 CONFIG_FILE = "das-config.json"
 
 import config
@@ -57,7 +59,7 @@ def unpack(bag, restart_if_needed=True):
         config.N_ROLLING_HISTORY = rhist
         config.POWER_SCALE = pscale
         if vis >= 0:
-            config.SELECTED_VISUALIZATION = vis
+            select_new_visualization(vis)
         # elif vis == -1:
         #     # Only store, don't change visualization
         elif vis == -3:

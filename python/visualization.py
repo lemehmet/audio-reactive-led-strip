@@ -178,7 +178,12 @@ def visualize_spectrum(y):
     return np.array([r, g, b, w]) * 255
 
 
-gw_counter = 0
+gandalf_counter = 0
+
+def select_new_visualization(index):
+    global gandalf_counter
+    gandalf_counter = 0
+    config.SELECTED_VISUALIZATION = index % len(effects)
 
 
 # https://krazydad.com/tutorials/makecolors.php
@@ -193,28 +198,28 @@ def create_gradient(freq_r, freq_g, freq_b, freq_w,
 
 
 def visualize_gandalf_white(y):
-    global gw_counter, pixels_gandalf_white
-    if gw_counter == 0:
+    global gandalf_counter, pixels_gandalf_white
+    if gandalf_counter == 0:
         pixels_gandalf_white = create_gradient(1, 1, 1, 1, 0.0, 0.0, 0.0, 220, 35)
     else:
         pixels_gandalf_white = np.roll(pixels_gandalf_white, 1, axis=1)
-    gw_counter += 1
+    gandalf_counter += 1
     return pixels_gandalf_white
 
 
 def visualize_gandalf_proud(y):
-    global gw_counter, pixels_gandalf_proud
-    if gw_counter == 0:
+    global gandalf_counter, pixels_gandalf_proud
+    if gandalf_counter == 0:
         pixels_gandalf_proud = create_gradient(1, 1, 1, 1, 0.0, np.pi / 2, np.pi, 0.0, 0, 0)
     else:
         pixels_gandalf_proud = np.roll(pixels_gandalf_proud, 1, axis=1)
-    gw_counter += 1
+    gandalf_counter += 1
     return pixels_gandalf_proud
 
 
 def visualize_gandalf_random(y):
-    global gw_counter, pixels_gandalf_random
-    if gw_counter == 0:
+    global gandalf_counter, pixels_gandalf_random
+    if gandalf_counter == 0:
         pixels_gandalf_random = np.array([
             np.random.randint(0, high=256, size=config.N_PIXELS),
             np.random.randint(0, high=256, size=config.N_PIXELS),
@@ -223,7 +228,7 @@ def visualize_gandalf_random(y):
         ])
     else:
         pixels_gandalf_random = np.roll(pixels_gandalf_random, 1, axis=1)
-    gw_counter += 1
+    gandalf_counter += 1
     return pixels_gandalf_random
 
 
