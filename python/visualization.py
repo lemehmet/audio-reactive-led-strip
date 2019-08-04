@@ -183,19 +183,8 @@ gw_counter = 0
 def visualize_gandalf_white(y):
     global gw_counter, pixels_gandalf_white
     if gw_counter == 0:
-        pixels_gandalf_white = np.tile(0, (4, config.N_PIXELS))
-        d = 511.0 / config.N_PIXELS
-        half = config.N_PIXELS // 2
-        for i in range(half):
-            pixels_gandalf_white[0, i] = floor(d * i)
-            pixels_gandalf_white[1, i] = floor(d * i)
-            pixels_gandalf_white[2, i] = floor(d * i)
-            pixels_gandalf_white[3, i] = 255
-        for i in range(half - 1, 0, -1):
-            pixels_gandalf_white[0, i + half] = floor(d * i)
-            pixels_gandalf_white[1, i + half] = floor(d * i)
-            pixels_gandalf_white[2, i + half] = floor(d * i)
-            pixels_gandalf_white[3, i + half] = 255
+        wave = (np.sin(np.linspace(0, np.pi, config.N_PIXELS)) * 255).astype(int)
+        pixels_gandalf_white = np.array(wave, wave, wave, np.full(10, 255))
     else:
         pixels_gandalf_white = np.roll(pixels_gandalf_white, 1, axis=1)
     gw_counter += 1
