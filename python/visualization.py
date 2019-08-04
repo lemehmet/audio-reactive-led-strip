@@ -184,11 +184,17 @@ def visualize_gandalf_white(y):
     global gw_counter, pixels_gandalf_white
     if gw_counter == 0:
         pixels_gandalf_white = np.tile(0, (4, config.N_PIXELS))
-        d = 255.0 / config.N_PIXELS
-        for i in range(config.N_PIXELS):
+        d = 511.0 / config.N_PIXELS
+        half = config.N_PIXELS // 2
+        for i in range(half):
             pixels_gandalf_white[0, i] = floor(d * i)
             pixels_gandalf_white[1, i] = floor(d * i)
             pixels_gandalf_white[2, i] = floor(d * i)
+            pixels_gandalf_white[3, i] = 255
+        for i in range(half + 1, config.N_PIXELS + 1):
+            pixels_gandalf_white[0, i] = floor(d * (i - half))
+            pixels_gandalf_white[1, i] = floor(d * (i - half))
+            pixels_gandalf_white[2, i] = floor(d * (i - half))
             pixels_gandalf_white[3, i] = 255
     else:
         pixels_gandalf_white = np.roll(pixels_gandalf_white, 1, axis=1)
