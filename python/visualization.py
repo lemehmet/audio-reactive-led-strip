@@ -185,7 +185,7 @@ def create_gradient(freq_r, freq_g, freq_b, freq_w, phase_r = 0.0, phase_g = 0.0
     wg = (np.sin(np.linspace(phase_g, 2 * freq_g * np.pi, config.N_PIXELS)) * width + center).astype(int)
     wb = (np.sin(np.linspace(phase_b, 2 * freq_b * np.pi, config.N_PIXELS)) * width + center).astype(int)
     ww = (np.sin(np.linspace(phase_w, 2 * freq_w * np.pi, config.N_PIXELS)) * width + center).astype(int)
-    return nb.array([wr, wg, wb, ww])
+    return np.array([wr, wg, wb, ww])
 
 def visualize_gandalf_white(y):
     global gw_counter, pixels_gandalf_white
