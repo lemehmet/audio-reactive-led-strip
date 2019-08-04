@@ -178,9 +178,22 @@ def visualize_spectrum(y):
     return output
 
 
+gw_counter = 0
+
 def visualize_gandalf_white(y):
-    global gw_counter
-    gw_counter = 0
+    global gw_counter, pixels_gandalf_while
+    if gw_counter == 0:
+        pixels_gandalf_while = np.tile(0, (4, config.N_PIXELS))
+        d = 255.0 / config.N_PIXELS
+        for i in range(config.N_PIXELS):
+            pixels_gandalf_while[0, i] = floor(d * i)
+            pixels_gandalf_while[1, i] = floor(d * i)
+            pixels_gandalf_while[2, i] = floor(d * i)
+            pixels_gandalf_while[3, i] = 255
+    else:
+        np.roll(pixels_gandalf_while, 1)
+    gw_counter += 1
+    return pixels_gandalf_while
 
 
 fft_plot_filter = dsp.ExpFilter(np.tile(1e-1, config.N_FFT_BINS), alpha_decay=0.5, alpha_rise=0.99)
