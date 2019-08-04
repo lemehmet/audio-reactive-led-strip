@@ -174,8 +174,7 @@ def visualize_spectrum(y):
     g = np.concatenate((g[::-1], g))
     b = np.concatenate((b[::-1], b))
     w = np.concatenate((w[::-1], w))
-    output = np.array([r, g, b, w]) * 255
-    return output
+    return np.array([r, g, b, w]) * 255
 
 
 gw_counter = 0
@@ -183,8 +182,10 @@ gw_counter = 0
 def visualize_gandalf_white(y):
     global gw_counter, pixels_gandalf_white
     if gw_counter == 0:
-        wave = (np.sin(np.linspace(0, np.pi, config.N_PIXELS)) * 255).astype(int)
-        pixels_gandalf_white = np.array([wave, wave, wave, np.full(config.N_PIXELS, 255)])
+        wave = np.sin(np.linspace(0, np.pi, config.N_PIXELS))
+        cw = (wave * 255).astype(int)
+        ww = (128 + (wave * 63)).astype(int)
+        pixels_gandalf_white = np.array([cw, cw, cw, ww])
     else:
         pixels_gandalf_white = np.roll(pixels_gandalf_white, 1, axis=1)
     gw_counter += 1
