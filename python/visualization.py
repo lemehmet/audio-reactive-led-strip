@@ -191,7 +191,7 @@ def visualize_gandalf_white(y):
             pixels_gandalf_while[2, i] = floor(d * i)
             pixels_gandalf_while[3, i] = 255
     else:
-        np.roll(pixels_gandalf_while, 1)
+        np.roll(pixels_gandalf_while, 1, axis=1)
     gw_counter += 1
     return pixels_gandalf_while
 
