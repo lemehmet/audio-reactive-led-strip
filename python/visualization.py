@@ -219,7 +219,7 @@ def visualize_gandalf_random(y):
             np.random.randint(0, high=256, size=config.N_PIXELS),
             np.random.randint(0, high=256, size=config.N_PIXELS),
             np.random.randint(0, high=256, size=config.N_PIXELS),
-            np.full(0,config.N_PIXELS),
+            np.full(config.N_PIXELS, 0),
         ])
     else:
         pixels_gandalf_random = np.roll(pixels_gandalf_random, 1, axis=1)
