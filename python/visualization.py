@@ -190,10 +190,11 @@ def visualize_gandalf_white(y):
             pixels_gandalf_while[1, i] = floor(d * i)
             pixels_gandalf_while[2, i] = floor(d * i)
             pixels_gandalf_while[3, i] = 255
+        output = pixels_gandalf_while
     else:
-        np.roll(pixels_gandalf_while, 1, axis=1)
+        output = np.roll(pixels_gandalf_while, 1, axis=1)
     gw_counter += 1
-    return pixels_gandalf_while
+    return output
 
 
 fft_plot_filter = dsp.ExpFilter(np.tile(1e-1, config.N_FFT_BINS), alpha_decay=0.5, alpha_rise=0.99)
