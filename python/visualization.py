@@ -191,7 +191,7 @@ def visualize_gandalf_white(y):
             pixels_gandalf_white[1, i] = floor(d * i)
             pixels_gandalf_white[2, i] = floor(d * i)
             pixels_gandalf_white[3, i] = 255
-        for i in range(half - 1, 0):
+        for i in range(half - 1, 0, -1):
             pixels_gandalf_white[0, i + half] = floor(d * i)
             pixels_gandalf_white[1, i + half] = floor(d * i)
             pixels_gandalf_white[2, i + half] = floor(d * i)
