@@ -109,3 +109,4 @@ MIN_VOLUME_THRESHOLD = MIN_SAMPLE_THRESHOLD / 32767.0
 """No music visualization displayed if recorded audio volume below threshold"""
 
 SELECTED_VISUALIZATION = 0
+POWER_SCALE = 1.0

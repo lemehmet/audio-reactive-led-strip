@@ -1,4 +1,5 @@
 import json
+import os
 from time import sleep
 
 CONFIG_FILE = "das-config.json"
@@ -16,6 +17,7 @@ def pack():
         'n_rolling_history': config.N_ROLLING_HISTORY,
         'min_volume_threshold': config.MIN_SAMPLE_THRESHOLD,
         'selected_visualization': config.SELECTED_VISUALIZATION,
+        'power_scale': config.POWER_SCALE,
         'force_restart': False,
     }
 
@@ -31,12 +33,19 @@ def unpack(bag, restart_if_needed = True):
         rhist = bag['n_rolling_history']
         mvt = bag['min_volume_threshold']
         vis = bag['selected_visualization']
+        pscale = bag['power_scale']
         force_restart = bag['force_restart']
+        if vis == -2:
+            # Just send the current values back, don't update anything
+            return
+        elif vis == -4:
+            # Reset config and restart
+            reset()
+            # TODO: Restart
         if not force_restart:
             force_restart = config.FPS != fps or config.MIN_FREQUENCY != minf or config.MAX_FREQUENCY != maxf or config.N_FFT_BINS != bins or config.N_ROLLING_HISTORY != rhist
         config.DISPLAY_FPS = display_fps
         config.SOFTWARE_GAMMA_CORRECTION = gamma
-        config.SELECTED_VISUALIZATION = vis
         config.MIN_SAMPLE_THRESHOLD = mvt
         config.MIN_VOLUME_THRESHOLD = config.MIN_SAMPLE_THRESHOLD / 32767.0
         config.FPS = fps
@@ -44,18 +53,35 @@ def unpack(bag, restart_if_needed = True):
         config.MAX_FREQUENCY = maxf
         config.N_FFT_BINS = bins
         config.N_ROLLING_HISTORY = rhist
+        config.POWER_SCALE = pscale
+        if vis >= 0:
+            config.SELECTED_VISUALIZATION = vis
+        # elif vis == -1:
+        #     # Only store, don't change visualization
+        elif vis == -3:
+            # Store and restart
+            force_restart = True
         if restart_if_needed and force_restart:
-            #TODO Restart the app somehow
             store()
+            #TODO Restart the app somehow
             print('Restarting')
     except KeyError as err:
         print(f"Unable to load config {err}")
     finally:
         store()
 
+def reset():
+    try:
+        os.remove(CONFIG_FILE)
+    except:
+        print(f"Unable to store {CONFIG_FILE}, loading defaults")
+
 def store():
-    with open(CONFIG_FILE, 'w') as outfile:
-        json.dump(pack(), outfile)
+    try:
+        with open(CONFIG_FILE, 'w') as outfile:
+            json.dump(pack(), outfile)
+    except:
+        print(f"Unable to store {CONFIG_FILE}, loading defaults")
 
 def load():
     try:
