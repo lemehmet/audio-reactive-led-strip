@@ -195,7 +195,7 @@ def create_gradient(freq_r, freq_g, freq_b, freq_w,
 def visualize_gandalf_white(y):
     global gw_counter, pixels_gandalf_white
     if gw_counter == 0:
-        pixels_gandalf_white = create_gradient(1, 1, 1, 1, 0.0, 0.0, 0.0, 32, 31)
+        pixels_gandalf_white = create_gradient(1, 1, 1, 1, 0.0, 0.0, 0.0, 220, 35)
     else:
         pixels_gandalf_white = np.roll(pixels_gandalf_white, 1, axis=1)
     gw_counter += 1
@@ -210,6 +210,21 @@ def visualize_gandalf_proud(y):
         pixels_gandalf_proud = np.roll(pixels_gandalf_proud, 1, axis=1)
     gw_counter += 1
     return pixels_gandalf_proud
+
+
+def visualize_gandalf_random(y):
+    global gw_counter, pixels_gandalf_random
+    if gw_counter == 0:
+        pixels_gandalf_random = np.array([
+            np.random.randint(0, high=256, size=config.N_PIXELS),
+            np.random.randint(0, high=256, size=config.N_PIXELS),
+            np.random.randint(0, high=256, size=config.N_PIXELS),
+            np.full(0,config.N_PIXELS),
+        ])
+    else:
+        pixels_gandalf_random = np.roll(pixels_gandalf_random, 1, axis=1)
+    gw_counter += 1
+    return pixels_gandalf_random
 
 
 fft_plot_filter = dsp.ExpFilter(np.tile(1e-1, config.N_FFT_BINS), alpha_decay=0.5, alpha_rise=0.99)
@@ -285,7 +300,8 @@ samples_per_frame = int(config.MIC_RATE / config.FPS)
 y_roll = np.random.rand(config.N_ROLLING_HISTORY, samples_per_frame) / 1e16
 
 visualization_effect = visualize_spectrum
-effects = [visualize_spectrum, visualize_energy, visualize_scroll, visualize_gandalf_white, visualize_gandalf_proud]
+effects = [visualize_spectrum, visualize_energy, visualize_scroll, visualize_gandalf_white, visualize_gandalf_proud,
+           visualize_gandalf_random]
 """Visualization effect to display on the LED strip"""
 
 n_frame = 0

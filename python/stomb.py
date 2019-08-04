@@ -43,6 +43,7 @@ def unpack(bag, restart_if_needed=True):
             # Reset config and restart
             reset()
             # TODO: Restart
+            os._exit(0)
         if not force_restart:
             force_restart = config.FPS != fps or config.MIN_FREQUENCY != minf or config.MAX_FREQUENCY != maxf or config.N_FFT_BINS != bins or config.N_ROLLING_HISTORY != rhist
         config.DISPLAY_FPS = display_fps
@@ -65,6 +66,7 @@ def unpack(bag, restart_if_needed=True):
         if restart_if_needed and force_restart:
             store()
             # TODO Restart the app somehow
+            os._exit(0)
             print('Restarting')
     except KeyError as err:
         print(f"Unable to load config {err}")
