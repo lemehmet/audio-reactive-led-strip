@@ -182,20 +182,20 @@ gw_counter = 0
 
 
 # https://krazydad.com/tutorials/makecolors.php
-def create_gradient(freq_r, freq_g, freq_b, freq_w, phase_r=0.0,
-                    phase_g=0.0, phase_b=0.0, phase_w=0.0,
-                    center=128, width=127):
+def create_gradient(freq_r, freq_g, freq_b, freq_w,
+                    phase_r=0.0, phase_g=0.0, phase_b=0.0, phase_w=0.0,
+                    white_center=16, white_width=15, center=128, width=127):
     wr = (np.sin(np.linspace(phase_r, 2 * freq_r * np.pi, config.N_PIXELS)) * width + center).astype(int)
     wg = (np.sin(np.linspace(phase_g, 2 * freq_g * np.pi, config.N_PIXELS)) * width + center).astype(int)
     wb = (np.sin(np.linspace(phase_b, 2 * freq_b * np.pi, config.N_PIXELS)) * width + center).astype(int)
-    ww = (np.sin(np.linspace(phase_w, 2 * freq_w * np.pi, config.N_PIXELS)) * width + center).astype(int)
+    ww = (np.sin(np.linspace(phase_w, 2 * freq_w * np.pi, config.N_PIXELS)) * white_width + white_center).astype(int)
     return np.array([wr, wg, wb, ww])
 
 
 def visualize_gandalf_white(y):
     global gw_counter, pixels_gandalf_white
     if gw_counter == 0:
-        pixels_gandalf_white = create_gradient(1, 1, 1, 1, 0.0, 0.0, 0.0)
+        pixels_gandalf_white = create_gradient(1, 1, 1, 1, 0.0, 0.0, 0.0, 32, 31)
     else:
         pixels_gandalf_white = np.roll(pixels_gandalf_white, 1, axis=1)
     gw_counter += 1
@@ -205,7 +205,7 @@ def visualize_gandalf_white(y):
 def visualize_gandalf_proud(y):
     global gw_counter, pixels_gandalf_proud
     if gw_counter == 0:
-        pixels_gandalf_proud = create_gradient(1, 1, 1, 1, 0.0, np.pi / 2, np.pi)
+        pixels_gandalf_proud = create_gradient(1, 1, 1, 1, 0.0, np.pi / 2, np.pi, 0.0, 0, 0)
     else:
         pixels_gandalf_proud = np.roll(pixels_gandalf_proud, 1, axis=1)
     gw_counter += 1
