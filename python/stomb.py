@@ -14,7 +14,7 @@ def pack():
         'max_freq': config.MAX_FREQUENCY,
         'n_fft_bins': config.N_PIXELS,
         'n_rolling_history': config.N_ROLLING_HISTORY,
-        'min_volume_threshold': config.MIN_VOLUME_THRESHOLD,
+        'min_volume_threshold': config.MIN_SAMPLE_THRESHOLD,
         'selected_visualization': config.SELECTED_VISUALIZATION,
         'force_restart': False,
     }
@@ -23,7 +23,8 @@ def pack():
 def unpack(bag, restart_if_needed = True):
     try:
         gamma = bag['software_gamma']
-        fps = bag['display_fps'] if bag['display_fps'] < config._max_led_FPS else config._max_led_FPS
+        display_fps = bag['display_fps']
+        fps = bag['fps'] if bag['fps'] < config._max_led_FPS else config._max_led_FPS
         minf = bag['min_freq']
         maxf = bag['max_freq']
         bins = bag['n_fft_bins']
@@ -33,9 +34,11 @@ def unpack(bag, restart_if_needed = True):
         force_restart = bag['force_restart']
         if not force_restart:
             force_restart = config.FPS != fps or config.MIN_FREQUENCY != minf or config.MAX_FREQUENCY != maxf or config.N_FFT_BINS != bins or config.N_ROLLING_HISTORY != rhist
+        config.DISPLAY_FPS = display_fps
         config.SOFTWARE_GAMMA_CORRECTION = gamma
         config.SELECTED_VISUALIZATION = vis
-        config.MIN_VOLUME_THRESHOLD = mvt
+        config.MIN_SAMPLE_THRESHOLD = mvt
+        config.MIN_VOLUME_THRESHOLD = config.MIN_SAMPLE_THRESHOLD / 32767.0
         config.FPS = fps
         config.MIN_FREQUENCY = minf
         config.MAX_FREQUENCY = maxf

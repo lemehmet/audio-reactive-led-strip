@@ -10,12 +10,13 @@ app = Flask(__name__)
 @app.route('/api/v1/config', methods=['GET', 'POST'])
 def config():
     if request.method == 'POST':
-        unpack(request.get_json(force=True))
+        payload = request.get_json(force=True)
+        unpack(payload)
     return pack()
 
 
 def remote_control():
-    app.run(debug=True, use_reloader=False)
+    app.run(host="127.0.0.1", port=8080, debug=True, use_reloader=False)
 
 if __name__ == "__main__":
     load()
