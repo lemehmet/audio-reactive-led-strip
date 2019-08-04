@@ -15,6 +15,7 @@ def config():
 
 
 def remote_control():
+    print("Starting config server.")
     app.run(host="127.0.0.1", port=8080, debug=True, use_reloader=False)
 
 if __name__ == "__main__":
