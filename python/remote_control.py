@@ -1,6 +1,5 @@
 import threading
 
-import config
 from flask import Flask, jsonify, request
 from stomb import dummy_loop, pack, load, unpack
 

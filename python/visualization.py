@@ -8,7 +8,7 @@ import microphone
 import dsp
 import led
 from math import floor
-from multiprocessing import Process, Value
+import threading
 import remote_control
 
 _time_prev = time.time() * 1000.0
@@ -223,7 +223,7 @@ def microphone_update(audio_samples):
         mel /= mel_gain.value
         mel = mel_smoothing.update(mel)
         # Map filterbank output onto LED strip
-        output = effects[floor(n_frame / 500) % len(effects)](mel)
+        output = effects[config.SELECTED_VISUALIZATION % len(effects)](mel)
         led.pixels = output
         led.update()
         n_frame += 1
@@ -362,9 +362,9 @@ if __name__ == '__main__':
     # Initialize LEDs
     led.update()
     # Start listening to live audio stream
-    p = Process(target=microphone.start_stream, args=(microphone_update,))
-    p.start()
+    tmic = threading.Thread(target=microphone.start_stream, args=(microphone_update,))
+    tmic.start()
     remote_control()
-    p.join()
+    tmic.join()
     # microphone.start_stream(microphone_update)
 

@@ -70,6 +70,31 @@ if __name__ == '__main__':
     pixels[1, 1] = 255  # Set 2nd pixel green
     pixels[2, 2] = 255  # Set 3rd pixel blue
     pixels[3, 3] = 255  # Set 4th pixel white
+
+    pixels[0, 4] = 255
+    pixels[1, 4] = 0
+    pixels[2, 4] = 0
+    pixels[3, 4] = 127
+
+    pixels[0, 5] = 0
+    pixels[1, 5] = 255
+    pixels[2, 5] = 0
+    pixels[3, 5] = 127
+
+    pixels[0, 6] = 0
+    pixels[1, 6] = 0
+    pixels[2, 6] = 255
+    pixels[3, 6] = 127
+
+    pixels[0, 7] = 255
+    pixels[1, 7] = 255
+    pixels[2, 7] = 255
+    pixels[3, 7] = 255
+
+    pixels[0, 8] = 255
+    pixels[1, 8] = 255
+    pixels[2, 8] = 255
+    pixels[3, 8] = 0
     print('Starting LED strand test')
     while True:
         pixels = np.roll(pixels, 1, axis=1)
