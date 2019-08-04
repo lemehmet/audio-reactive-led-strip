@@ -364,7 +364,7 @@ if __name__ == '__main__':
     # Start listening to live audio stream
     tmic = threading.Thread(target=microphone.start_stream, args=(microphone_update,))
     tmic.start()
-    remote_control()
+    remote_control.control_loop()
     tmic.join()
     # microphone.start_stream(microphone_update)
 

@@ -14,7 +14,7 @@ def config():
     return pack()
 
 
-def remote_control():
+def control_loop():
     print("Starting config server.")
     app.run(host="127.0.0.1", port=8080, debug=True, use_reloader=False)
 
@@ -22,5 +22,5 @@ if __name__ == "__main__":
     load()
     t = threading.Thread(target=dummy_loop)
     t.start()
-    remote_control()
+    control_loop()
     t.join()
