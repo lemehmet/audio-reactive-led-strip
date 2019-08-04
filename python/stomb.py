@@ -6,6 +6,7 @@ CONFIG_FILE = "das-config.json"
 
 import config
 
+
 def pack():
     return {
         'software_gamma': config.SOFTWARE_GAMMA_CORRECTION,
@@ -22,7 +23,7 @@ def pack():
     }
 
 
-def unpack(bag, restart_if_needed = True):
+def unpack(bag, restart_if_needed=True):
     try:
         gamma = bag['software_gamma']
         display_fps = bag['display_fps']
@@ -63,18 +64,20 @@ def unpack(bag, restart_if_needed = True):
             force_restart = True
         if restart_if_needed and force_restart:
             store()
-            #TODO Restart the app somehow
+            # TODO Restart the app somehow
             print('Restarting')
     except KeyError as err:
         print(f"Unable to load config {err}")
     finally:
         store()
 
+
 def reset():
     try:
         os.remove(CONFIG_FILE)
     except:
         print(f"Unable to store {CONFIG_FILE}, loading defaults")
+
 
 def store():
     try:
@@ -83,6 +86,7 @@ def store():
     except:
         print(f"Unable to store {CONFIG_FILE}, loading defaults")
 
+
 def load():
     try:
         with open(CONFIG_FILE) as json_file:
@@ -90,12 +94,13 @@ def load():
     except:
         print(f"Unable to load {CONFIG_FILE}, loading defaults")
 
+
 def dummy_loop():
     c = 0
     while True:
         c += 1
         print(f"{c}: FPS: {config.FPS} Gamma: {config.SOFTWARE_GAMMA_CORRECTION} "
-               f"Min Freq: {config.MIN_FREQUENCY} Max Freq: {config.MAX_FREQUENCY} "
-               f"Bins: {config.N_FFT_BINS} History: {config.N_ROLLING_HISTORY} "
-               f"Min Volume: {config.MIN_VOLUME_THRESHOLD}")
+              f"Min Freq: {config.MIN_FREQUENCY} Max Freq: {config.MAX_FREQUENCY} "
+              f"Bins: {config.N_FFT_BINS} History: {config.N_ROLLING_HISTORY} "
+              f"Min Volume: {config.MIN_VOLUME_THRESHOLD}")
         sleep(1)

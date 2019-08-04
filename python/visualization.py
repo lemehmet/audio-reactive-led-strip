@@ -117,6 +117,7 @@ def visualize_scroll(y):
     p[0, 0] = r
     p[1, 0] = g
     p[2, 0] = b
+    w[3, 0] = 0
     # Update the LED strip
     return np.concatenate((p[:, ::-1], p), axis=1)
 
@@ -141,12 +142,14 @@ def visualize_energy(y):
     p[1, g:] = 0.0
     p[2, :b] = 255.0
     p[2, b:] = 0.0
+    p[3, :] = 0.0
     p_filt.update(p)
     p = np.round(p_filt.value)
     # Apply substantial blur to smooth the edges
     p[0, :] = gaussian_filter1d(p[0, :], sigma=4.0)
     p[1, :] = gaussian_filter1d(p[1, :], sigma=4.0)
     p[2, :] = gaussian_filter1d(p[2, :], sigma=4.0)
+    p[3, :] = gaussian_filter1d(p[3, :], sigma=4.0)
     # Set the new pixel value
     return np.concatenate((p[:, ::-1], p), axis=1)
 
@@ -165,12 +168,19 @@ def visualize_spectrum(y):
     r = r_filt.update(y - common_mode.value)
     g = np.abs(diff)
     b = b_filt.update(np.copy(y))
+    w = y * 0
     # Mirror the color channels for symmetric output
     r = np.concatenate((r[::-1], r))
     g = np.concatenate((g[::-1], g))
     b = np.concatenate((b[::-1], b))
-    output = np.array([r, g,b]) * 255
+    w = np.concatenate((w[::-1], w))
+    output = np.array([r, g, b, w]) * 255
     return output
+
+
+def visualize_gandalf_white(y):
+    global gw_counter
+    gw_counter = 0
 
 
 fft_plot_filter = dsp.ExpFilter(np.tile(1e-1, config.N_FFT_BINS), alpha_decay=0.5, alpha_rise=0.99)
