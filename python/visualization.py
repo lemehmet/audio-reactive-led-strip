@@ -178,11 +178,11 @@ def visualize_spectrum(y):
     return np.array([r, g, b, w]) * 255
 
 
-gandalf_counter = 0
+gandalf_needs_init = True
 
 def select_new_visualization(index):
     global gandalf_counter
-    gandalf_counter = 0
+    gandalf_needs_init = True
     config.SELECTED_VISUALIZATION = index % len(effects)
 
 
@@ -198,37 +198,46 @@ def create_gradient(freq_r, freq_g, freq_b, freq_w,
 
 
 def visualize_gandalf_white(y):
-    global gandalf_counter, pixels_gandalf_white
-    if gandalf_counter == 0:
+    global gandalf_needs_init, pixels_gandalf_white
+    if gandalf_needs_init:
         pixels_gandalf_white = create_gradient(1, 1, 1, 1, 0.0, 0.0, 0.0, 220, 35)
+        gandalf_needs_init = False;
     else:
-        pixels_gandalf_white = np.roll(pixels_gandalf_white, 1, axis=1)
-    gandalf_counter += 1
+        try:
+            pixels_gandalf_white = np.roll(pixels_gandalf_white, 1, axis=1)
+        except NameError:
+            gandalf_needs_init = True
     return pixels_gandalf_white
 
 
 def visualize_gandalf_proud(y):
-    global gandalf_counter, pixels_gandalf_proud
-    if gandalf_counter == 0:
+    global gandalf_needs_init, pixels_gandalf_proud
+    if gandalf_needs_init:
         pixels_gandalf_proud = create_gradient(1, 1, 1, 1, 0.0, np.pi / 2, np.pi, 0.0, 0, 0)
+        gandalf_needs_init = False;
     else:
-        pixels_gandalf_proud = np.roll(pixels_gandalf_proud, 1, axis=1)
-    gandalf_counter += 1
+        try:
+            pixels_gandalf_proud = np.roll(pixels_gandalf_proud, 1, axis=1)
+        except NameError:
+            gandalf_needs_init = True
     return pixels_gandalf_proud
 
 
 def visualize_gandalf_random(y):
-    global gandalf_counter, pixels_gandalf_random
-    if gandalf_counter == 0:
+    global gandalf_needs_init, pixels_gandalf_random
+    if gandalf_needs_init:
         pixels_gandalf_random = np.array([
             np.random.randint(0, high=256, size=config.N_PIXELS),
             np.random.randint(0, high=256, size=config.N_PIXELS),
             np.random.randint(0, high=256, size=config.N_PIXELS),
             np.full(config.N_PIXELS, 0),
         ])
+        gandalf_needs_init = False;
     else:
-        pixels_gandalf_random = np.roll(pixels_gandalf_random, 1, axis=1)
-    gandalf_counter += 1
+        try:
+            pixels_gandalf_random = np.roll(pixels_gandalf_random, 1, axis=1)
+        except NameError:
+            gandalf_needs_init = True
     return pixels_gandalf_random
 
 
