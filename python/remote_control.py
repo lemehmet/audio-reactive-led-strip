@@ -1,4 +1,5 @@
 import threading
+import traceback
 
 from flask import Flask, jsonify, request
 from stomb import dummy_loop, pack, load, unpack
@@ -8,10 +9,16 @@ app = Flask(__name__)
 
 @app.route('/api/v1/config', methods=['GET', 'POST'])
 def config():
-    if request.method == 'POST':
-        payload = request.get_json(force=True)
-        unpack(payload)
-    return pack()
+    try:
+        if request.method == 'POST':
+            payload = request.get_json(force=True)
+            unpack(payload)
+        return pack()
+    except Exception as e:
+        print(traceback.format_exc())
+    except:
+        print("Unexpected error:", sys.exc_info()[0])
+    return None
 
 
 def control_loop():
