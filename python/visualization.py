@@ -10,6 +10,7 @@ import led
 from math import floor
 import threading
 import remote_control
+from stomb import load
 
 _time_prev = time.time() * 1000.0
 """The previous time that the frames_per_second() function was called"""
@@ -440,6 +441,8 @@ if __name__ == '__main__':
         layout.addItem(energy_label)
         layout.addItem(scroll_label)
         layout.addItem(spectrum_label)
+    # Load the config
+    load()
     # Initialize LEDs
     led.update()
     # Start listening to live audio stream

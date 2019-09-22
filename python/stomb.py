@@ -94,7 +94,18 @@ def store():
 def load():
     try:
         with open(CONFIG_FILE) as json_file:
-            unpack(json.load(json_file), False)
+            bag = json.load(json_file)
+            config.SOFTWARE_GAMMA_CORRECTION = bag['software_gamma']
+            config.DISPLAY_FPS = bag['display_fps']
+            config.FPS = bag['fps'] if bag['fps'] < config._max_led_FPS else config._max_led_FPS
+            config.MIN_FREQUENCY = bag['min_freq']
+            config.MAX_FREQUENCY = bag['max_freq']
+            config.N_FFT_BINS = bag['n_fft_bins']
+            config.N_ROLLING_HISTORY = bag['n_rolling_history']
+            config.MIN_SAMPLE_THRESHOLD = bag['min_volume_threshold']
+            config.MIN_VOLUME_THRESHOLD = config.MIN_SAMPLE_THRESHOLD / 32767.0
+            config.SELECTED_VISUALIZATION = bag['selected_visualization']
+            config.POWER_SCALE = bag['power_scale']
     except:
         print(f"Unable to load {CONFIG_FILE}, loading defaults")
 
