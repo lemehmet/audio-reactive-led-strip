@@ -28,26 +28,25 @@ class ExpFilter:
 def rfft(data, window=None):
     window = 1.0 if window is None else window(len(data))
     ys = np.abs(np.fft.rfft(data * window))
-    xs = np.fft.rfftfreq(len(data), 1.0 / config.MIC_RATE)
+    xs = np.fft.rfftfreq(len(data), 1.0 / config['MIC_RATE'])
     return xs, ys
 
 
 def fft(data, window=None):
     window = 1.0 if window is None else window(len(data))
     ys = np.fft.fft(data * window)
-    xs = np.fft.fftfreq(len(data), 1.0 / config.MIC_RATE)
+    xs = np.fft.fftfreq(len(data), 1.0 / config['MIC_RATE'])
     return xs, ys
 
 
-def create_mel_bank():
+def create_mel_bank(running_config):
     global samples, mel_y, mel_x
-    samples = int(config.MIC_RATE * config.N_ROLLING_HISTORY / (2.0 * config.FPS))
-    mel_y, (_, mel_x) = melbank.compute_melmat(num_mel_bands=config.N_FFT_BINS,
-                                               freq_min=config.MIN_FREQUENCY,
-                                               freq_max=config.MAX_FREQUENCY,
+    samples = int(running_config['MIC_RATE'] * running_config['N_ROLLING_HISTORY'] / (2.0 * running_config['FPS']))
+    mel_y, (_, mel_x) = melbank.compute_melmat(num_mel_bands=running_config['N_FFT_BINS'],
+                                               freq_min=running_config['MIN_FREQUENCY'],
+                                               freq_max=running_config['MAX_FREQUENCY'],
                                                num_fft_bands=samples,
-                                               sample_rate=config.MIC_RATE)
+                                               sample_rate=running_config['MIC_RATE'])
 samples = None
 mel_y = None
 mel_x = None
-create_mel_bank()

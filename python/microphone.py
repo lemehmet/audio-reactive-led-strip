@@ -4,13 +4,13 @@ import pyaudio
 import config
 
 
-def start_stream(callback):
+def start_stream(callback, running_config):
     p = pyaudio.PyAudio()
-    frames_per_buffer = int(config.MIC_RATE / config.FPS)
-    stream = p.open(input_device_index = config.INPUT_DEVICE_INDEX,
+    frames_per_buffer = int(running_config['MIC_RATE'] / running_config['FPS'])
+    stream = p.open(input_device_index = running_config['INPUT_DEVICE_INDEX'],
     format=pyaudio.paInt16,
                     channels=1,
-                    rate=config.MIC_RATE,
+                    rate=running_config['MIC_RATE'],
                     input=True,
                     frames_per_buffer=frames_per_buffer)
     overflows = 0

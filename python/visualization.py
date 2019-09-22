@@ -1,5 +1,3 @@
-from __future__ import print_function
-from __future__ import division
 import time
 import numpy as np
 from scipy.ndimage.filters import gaussian_filter1d
@@ -7,17 +5,17 @@ import config
 import microphone
 import dsp
 import led
-from math import floor
 import threading
 import remote_control
-from stomb import load
+import strip_config
+
+config = config.Config(filepath=strip_config.CONFIG_FILE, defaults=strip_config.DEFAULT_CONFIG)
 
 _time_prev = time.time() * 1000.0
 """The previous time that the frames_per_second() function was called"""
 
-_fps = dsp.ExpFilter(val=config.FPS, alpha_decay=0.2, alpha_rise=0.2)
+_fps = dsp.ExpFilter(val=config['FPS'], alpha_decay=0.2, alpha_rise=0.2)
 """The low-pass filter used to estimate frames-per-second"""
-
 
 def frames_per_second():
     """Return the estimated frames per second
@@ -92,13 +90,13 @@ def interpolate(y, new_length):
     return z
 
 
-r_filt = dsp.ExpFilter(np.tile(0.01, config.N_PIXELS // 2), alpha_decay=0.2, alpha_rise=0.99)
-g_filt = dsp.ExpFilter(np.tile(0.01, config.N_PIXELS // 2), alpha_decay=0.05, alpha_rise=0.3)
-b_filt = dsp.ExpFilter(np.tile(0.01, config.N_PIXELS // 2), alpha_decay=0.1, alpha_rise=0.5)
-common_mode = dsp.ExpFilter(np.tile(0.01, config.N_PIXELS // 2), alpha_decay=0.99, alpha_rise=0.01)
-p_filt = dsp.ExpFilter(np.tile(1, (4, config.N_PIXELS // 2)), alpha_decay=0.1, alpha_rise=0.99)
-p = np.tile(1.0, (4, config.N_PIXELS // 2))
-gain = dsp.ExpFilter(np.tile(0.01, config.N_FFT_BINS), alpha_decay=0.001, alpha_rise=0.99)
+r_filt = dsp.ExpFilter(np.tile(0.01, config['N_PIXELS'] // 2), alpha_decay=0.2, alpha_rise=0.99)
+g_filt = dsp.ExpFilter(np.tile(0.01, config['N_PIXELS'] // 2), alpha_decay=0.05, alpha_rise=0.3)
+b_filt = dsp.ExpFilter(np.tile(0.01, config['N_PIXELS'] // 2), alpha_decay=0.1, alpha_rise=0.5)
+common_mode = dsp.ExpFilter(np.tile(0.01, config['N_PIXELS'] // 2), alpha_decay=0.99, alpha_rise=0.01)
+p_filt = dsp.ExpFilter(np.tile(1, (4, config['N_PIXELS'] // 2)), alpha_decay=0.1, alpha_rise=0.99)
+p = np.tile(1.0, (4, config['N_PIXELS'] // 2))
+gain = dsp.ExpFilter(np.tile(0.01, config['N_FFT_BINS']), alpha_decay=0.001, alpha_rise=0.99)
 
 
 def visualize_scroll(y):
@@ -131,9 +129,9 @@ def visualize_energy(y):
     gain.update(y)
     y /= gain.value
     # Scale by the width of the LED strip
-    y *= float((config.N_PIXELS // 2) - 1)
+    y *= float((config['N_PIXELS'] // 2) - 1)
     # Map color channels according to energy in the different freq bands
-    scale = config.POWER_SCALE
+    scale = config['POWER_SCALE']
     r = int(np.mean(y[:len(y) // 3] ** scale))
     g = int(np.mean(y[len(y) // 3: 2 * len(y) // 3] ** scale))
     b = int(np.mean(y[2 * len(y) // 3:] ** scale))
@@ -156,13 +154,13 @@ def visualize_energy(y):
     return np.concatenate((p[:, ::-1], p), axis=1)
 
 
-_prev_spectrum = np.tile(0.01, config.N_PIXELS // 2)
+_prev_spectrum = np.tile(0.01, config['N_PIXELS'] // 2)
 
 
 def visualize_spectrum(y):
     """Effect that maps the Mel filterbank frequencies onto the LED strip"""
     global _prev_spectrum
-    y = np.copy(interpolate(y, config.N_PIXELS // 2))
+    y = np.copy(interpolate(y, config['N_PIXELS'] // 2))
     common_mode.update(y)
     diff = y - _prev_spectrum
     _prev_spectrum = np.copy(y)
@@ -181,20 +179,21 @@ def visualize_spectrum(y):
 
 gandalf_needs_init = True
 
-def select_new_visualization(index):
-    global gandalf_counter
+def select_new_visualization(running_config, index):
+    global gandalf_counter, gandalf_needs_init
     gandalf_needs_init = True
-    config.SELECTED_VISUALIZATION = index % len(effects)
+    running_config['SELECTED_VISUALIZATION'] = index % len(effects)
 
 
 # https://krazydad.com/tutorials/makecolors.php
 def create_gradient(freq_r, freq_g, freq_b, freq_w,
                     phase_r=0.0, phase_g=0.0, phase_b=0.0, phase_w=0.0,
                     white_center=16, white_width=15, center=128, width=127):
-    wr = (np.sin(np.linspace(phase_r, 2 * freq_r * np.pi, config.N_PIXELS)) * width + center).astype(int)
-    wg = (np.sin(np.linspace(phase_g, 2 * freq_g * np.pi, config.N_PIXELS)) * width + center).astype(int)
-    wb = (np.sin(np.linspace(phase_b, 2 * freq_b * np.pi, config.N_PIXELS)) * width + center).astype(int)
-    ww = (np.sin(np.linspace(phase_w, 2 * freq_w * np.pi, config.N_PIXELS)) * white_width + white_center).astype(int)
+    n_pixels = config['N_PIXELS']
+    wr = (np.sin(np.linspace(phase_r, 2 * freq_r * np.pi, n_pixels)) * width + center).astype(int)
+    wg = (np.sin(np.linspace(phase_g, 2 * freq_g * np.pi, n_pixels)) * width + center).astype(int)
+    wb = (np.sin(np.linspace(phase_b, 2 * freq_b * np.pi, n_pixels)) * width + center).astype(int)
+    ww = (np.sin(np.linspace(phase_w, 2 * freq_w * np.pi, n_pixels)) * white_width + white_center).astype(int)
     return np.array([wr, wg, wb, ww])
 
 
@@ -232,13 +231,14 @@ def visualize_gandalf_proud(y):
 
 def visualize_gandalf_random(y):
     global gandalf_needs_init, pixels_gandalf_random
+    n_pixels = config['N_PIXELS']
     while True:
         if gandalf_needs_init:
             pixels_gandalf_random = np.array([
-                np.random.randint(0, high=256, size=config.N_PIXELS),
-                np.random.randint(0, high=256, size=config.N_PIXELS),
-                np.random.randint(0, high=256, size=config.N_PIXELS),
-                np.full(config.N_PIXELS, 0),
+                np.random.randint(0, high=256, size=n_pixels),
+                np.random.randint(0, high=256, size=n_pixels),
+                np.random.randint(0, high=256, size=n_pixels),
+                np.full(n_pixels, 0),
             ])
             gandalf_needs_init = False;
         else:
@@ -251,11 +251,11 @@ def visualize_gandalf_random(y):
     return pixels_gandalf_random
 
 
-fft_plot_filter = dsp.ExpFilter(np.tile(1e-1, config.N_FFT_BINS), alpha_decay=0.5, alpha_rise=0.99)
-mel_gain = dsp.ExpFilter(np.tile(1e-1, config.N_FFT_BINS), alpha_decay=0.01, alpha_rise=0.99)
-mel_smoothing = dsp.ExpFilter(np.tile(1e-1, config.N_FFT_BINS), alpha_decay=0.5, alpha_rise=0.99)
-# volume = dsp.ExpFilter(config.MIN_VOLUME_THRESHOLD, alpha_decay=0.02, alpha_rise=0.02)
-fft_window = np.hamming(int(config.MIC_RATE / config.FPS) * config.N_ROLLING_HISTORY)
+fft_plot_filter = dsp.ExpFilter(np.tile(1e-1, config['N_FFT_BINS']), alpha_decay=0.5, alpha_rise=0.99)
+mel_gain = dsp.ExpFilter(np.tile(1e-1, config['N_FFT_BINS']), alpha_decay=0.01, alpha_rise=0.99)
+mel_smoothing = dsp.ExpFilter(np.tile(1e-1, config['N_FFT_BINS']), alpha_decay=0.5, alpha_rise=0.99)
+# volume = dsp.ExpFilter(config['MIN_VOLUME_THRESHOLD'], alpha_decay=0.02, alpha_rise=0.02)
+fft_window = np.hamming(int(config['MIC_RATE'] / config['FPS']) * config['N_ROLLING_HISTORY'])
 prev_fps_update = time.time()
 
 
@@ -269,10 +269,9 @@ def microphone_update(audio_samples):
     y_data = np.concatenate(y_roll, axis=0).astype(np.float32)
 
     vol = np.max(np.abs(y_data))
-    if vol < config.MIN_VOLUME_THRESHOLD:
-        print('No audio input. Volume below threshold. Volume:', vol)
-        led.pixels = np.tile(0, (4, config.N_PIXELS))
-        led.update()
+    if vol < config['MIN_VOLUME_THRESHOLD']:
+        led.pixels = np.tile(0, (4, config['N_PIXELS']))
+        led.update(config)
     else:
         # Transform audio input into the frequency domain
         N = len(y_data)
@@ -292,13 +291,13 @@ def microphone_update(audio_samples):
         mel /= mel_gain.value
         mel = mel_smoothing.update(mel)
         # Map filterbank output onto LED strip
-        output = effects[config.SELECTED_VISUALIZATION % len(effects)](mel)
+        output = effects[config['SELECTED_VISUALIZATION'] % len(effects)](mel)
         led.pixels = output
-        led.update()
+        led.update(config)
         n_frame += 1
-        if config.USE_GUI:
+        if config['USE_GUI']:
             # Plot filterbank output
-            x = np.linspace(config.MIN_FREQUENCY, config.MAX_FREQUENCY, len(mel))
+            x = np.linspace(config['MIN_FREQUENCY'], config['MAX_FREQUENCY'], len(mel))
             mel_curve.setData(x=x, y=fft_plot_filter.update(mel))
             # Plot the color channels
             #            r_curve.setData(y=led.pixels[0])
@@ -307,21 +306,21 @@ def microphone_update(audio_samples):
             r_curve.setData(y=output[0])
             g_curve.setData(y=output[1])
             b_curve.setData(y=output[2])
-    if config.USE_GUI:
+    if config['USE_GUI']:
         app.processEvents()
 
-    if config.DISPLAY_FPS:
+    if config['DISPLAY_FPS']:
         fps = frames_per_second()
         if time.time() - 0.5 > prev_fps_update:
             prev_fps_update = time.time()
-            print('FPS {:.0f} / {:.0f}'.format(fps, config.FPS))
+            print('FPS {:.0f} / {:.0f}'.format(fps, config['FPS']))
 
 
 # Number of audio samples to read every time frame
-samples_per_frame = int(config.MIC_RATE / config.FPS)
+samples_per_frame = int(config['MIC_RATE'] / config['FPS'])
 
 # Array containing the rolling audio sample window
-y_roll = np.random.rand(config.N_ROLLING_HISTORY, samples_per_frame) / 1e16
+y_roll = np.random.rand(config['N_ROLLING_HISTORY'], samples_per_frame) / 1e16
 
 visualization_effect = visualize_spectrum
 effects = [visualize_spectrum, visualize_energy, visualize_scroll, visualize_gandalf_white, visualize_gandalf_proud,
@@ -331,7 +330,7 @@ effects = [visualize_spectrum, visualize_energy, visualize_scroll, visualize_gan
 n_frame = 0
 
 if __name__ == '__main__':
-    if config.USE_GUI:
+    if config['USE_GUI']:
         import pyqtgraph as pg
         from pyqtgraph.Qt import QtGui, QtCore
 
@@ -347,7 +346,7 @@ if __name__ == '__main__':
         fft_plot = layout.addPlot(title='Filterbank Output', colspan=3)
         fft_plot.setRange(yRange=[-0.1, 1.2])
         fft_plot.disableAutoRange(axis=pg.ViewBox.YAxis)
-        x_data = np.array(range(1, config.N_FFT_BINS + 1))
+        x_data = np.array(range(1, config['N_FFT_BINS'] + 1))
         mel_curve = pg.PlotCurveItem()
         mel_curve.setData(x=x_data, y=x_data * 0)
         fft_plot.addItem(mel_curve)
@@ -365,7 +364,7 @@ if __name__ == '__main__':
         g_curve = pg.PlotCurveItem(pen=g_pen)
         b_curve = pg.PlotCurveItem(pen=b_pen)
         # Define x data
-        x_data = np.array(range(1, config.N_PIXELS + 1))
+        x_data = np.array(range(1, config['N_PIXELS'] + 1))
         r_curve.setData(x=x_data, y=x_data * 0)
         g_curve.setData(x=x_data, y=x_data * 0)
         b_curve.setData(x=x_data, y=x_data * 0)
@@ -379,22 +378,22 @@ if __name__ == '__main__':
 
         # Frequency slider
         def freq_slider_change(tick):
-            minf = freq_slider.tickValue(0) ** 2.0 * (config.MIC_RATE / 2.0)
-            maxf = freq_slider.tickValue(1) ** 2.0 * (config.MIC_RATE / 2.0)
+            minf = freq_slider.tickValue(0) ** 2.0 * (config['MIC_RATE'] / 2.0)
+            maxf = freq_slider.tickValue(1) ** 2.0 * (config['MIC_RATE'] / 2.0)
             t = 'Frequency range: {:.0f} - {:.0f} Hz'.format(minf, maxf)
             freq_label.setText(t)
-            config.MIN_FREQUENCY = minf
-            config.MAX_FREQUENCY = maxf
+            config['MIN_FREQUENCY'] = minf
+            config['MAX_FREQUENCY'] = maxf
             dsp.create_mel_bank()
 
 
         freq_slider = pg.TickSliderItem(orientation='bottom', allowAdd=False)
-        freq_slider.addTick((config.MIN_FREQUENCY / (config.MIC_RATE / 2.0)) ** 0.5)
-        freq_slider.addTick((config.MAX_FREQUENCY / (config.MIC_RATE / 2.0)) ** 0.5)
+        freq_slider.addTick((config['MIN_FREQUENCY'] / (config['MIC_RATE'] / 2.0)) ** 0.5)
+        freq_slider.addTick((config['MAX_FREQUENCY'] / (config['MIC_RATE'] / 2.0)) ** 0.5)
         freq_slider.tickMoveFinished = freq_slider_change
         freq_label.setText('Frequency range: {} - {} Hz'.format(
-            config.MIN_FREQUENCY,
-            config.MAX_FREQUENCY))
+            config['MIN_FREQUENCY'],
+            config['MAX_FREQUENCY']))
         # Effect selection
         active_color = '#16dbeb'
         inactive_color = '#FFFFFF'
@@ -441,13 +440,13 @@ if __name__ == '__main__':
         layout.addItem(energy_label)
         layout.addItem(scroll_label)
         layout.addItem(spectrum_label)
-    # Load the config
-    load()
     # Initialize LEDs
-    led.update()
+    dsp.create_mel_bank(config)
+    led.setup(config)
+    led.update(config)
     # Start listening to live audio stream
-    tmic = threading.Thread(target=microphone.start_stream, args=(microphone_update,))
+    tmic = threading.Thread(target=microphone.start_stream, args=(microphone_update,config))
     tmic.start()
-    remote_control.control_loop()
+    remote_control.control_loop(config)
     tmic.join()
     # microphone.start_stream(microphone_update)

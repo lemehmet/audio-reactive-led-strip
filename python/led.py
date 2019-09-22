@@ -1,29 +1,27 @@
-from __future__ import print_function
-from __future__ import division
-
 import platform
 import numpy as np
 import config
 from math import floor
 
-if config.DEVICE == 'pi':
-    import board
-    import neopixel
-    strip = neopixel.NeoPixel(board.D18, config.N_PIXELS, brightness=0.9, auto_write=False, pixel_order=neopixel.GRBW)
+def setup(running_config):
+    if running_config['DEVICE'] == 'pi':
+        import board
+        import neopixel
+        global strip
+        strip = neopixel.NeoPixel(board.D18, running_config['N_PIXELS'], brightness=0.9, auto_write=False, pixel_order=neopixel.GRBW)
 
-_gamma = np.load(config.GAMMA_TABLE_PATH)
-"""Gamma lookup table used for nonlinear brightness correction"""
+    global pixels, _gamma, _prev_pixels
 
-_prev_pixels = np.tile(253, (4, config.N_PIXELS))
-"""Pixel values that were most recently displayed on the LED strip"""
+    _gamma = np.load(running_config['GAMMA_TABLE_PATH'])
+    """Gamma lookup table used for nonlinear brightness correction"""
 
-pixels = np.tile(1, (4, config.N_PIXELS))
-"""Pixel values for the LED strip"""
+    _prev_pixels = np.tile(253, (4, running_config['N_PIXELS']))
+    """Pixel values that were most recently displayed on the LED strip"""
 
-_is_python_2 = int(platform.python_version_tuple()[0]) == 2
+    pixels = np.tile(1, (4, running_config['N_PIXELS']))
+    """Pixel values for the LED strip"""
 
-
-def _update_pi():
+def _update_pi(running_config):
     """Writes new LED values to the Raspberry Pi's LED strip
 
     Raspberry Pi uses the rpi_ws281x to control the LED strip directly.
@@ -33,14 +31,14 @@ def _update_pi():
     # Truncate values and cast to integer
     pixels = np.clip(pixels, 0, 255).astype(int)
     # Optional gamma correction
-    p = _gamma[pixels] if config.SOFTWARE_GAMMA_CORRECTION else np.copy(pixels)
+    p = _gamma[pixels] if running_config['SOFTWARE_GAMMA_CORRECTION'] else np.copy(pixels)
     # Encode 24-bit LED values in 32 bit integers
     r = p[0][:].astype(int)
     g = p[1][:].astype(int)
     b = p[2][:].astype(int)
     w = p[3][:].astype(int)
     # Update the pixels
-    for i in range(config.N_PIXELS):
+    for i in range(running_config['N_PIXELS']):
         # Ignore pixels if they haven't changed (saves bandwidth)
         if np.array_equal(p[:, i], _prev_pixels[:, i]):
             continue
@@ -52,9 +50,9 @@ def _update_pi():
     _prev_pixels = np.copy(p)
     strip.show()
 
-def update():
-    if config.DEVICE == 'pi':
-        _update_pi()
+def update(running_config):
+    if running_config['DEVICE'] == 'pi':
+        _update_pi(running_config)
     else:
         raise ValueError('Invalid device selected')
 
