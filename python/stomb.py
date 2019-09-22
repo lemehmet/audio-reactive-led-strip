@@ -86,7 +86,7 @@ def reset():
 def store():
     try:
         with open(CONFIG_FILE, 'w') as outfile:
-            json.dump(s, outfile)
+            json.dump(pack(), outfile)
     except:
         print(f"Unable to store {CONFIG_FILE}, loading defaults")
 
