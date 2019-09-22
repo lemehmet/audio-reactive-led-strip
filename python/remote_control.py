@@ -9,9 +9,11 @@ app = Flask(__name__)
 
 @app.route('/api/v1/config', methods=['GET', 'POST'])
 def config():
+    print(f"Handling config {request.method}")
     try:
         if request.method == 'POST':
             payload = request.get_json(force=True)
+            print(f"Got a set config: {payload}")
             unpack(payload)
         return pack()
     except Exception as e:
