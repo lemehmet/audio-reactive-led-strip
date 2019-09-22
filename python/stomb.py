@@ -16,7 +16,7 @@ def pack():
         'fps': config.FPS,
         'min_freq': config.MIN_FREQUENCY,
         'max_freq': config.MAX_FREQUENCY,
-        'n_fft_bins': config.N_PIXELS,
+        'n_fft_bins': config.N_FFT_BINS,
         'n_rolling_history': config.N_ROLLING_HISTORY,
         'min_volume_threshold': config.MIN_SAMPLE_THRESHOLD,
         'selected_visualization': config.SELECTED_VISUALIZATION,
@@ -86,7 +86,7 @@ def reset():
 def store():
     try:
         with open(CONFIG_FILE, 'w') as outfile:
-            json.dump(pack(), outfile)
+            json.dump(s, outfile)
     except:
         print(f"Unable to store {CONFIG_FILE}, loading defaults")
 
