@@ -213,6 +213,22 @@ def visualize_gandalf_white(y):
     return pixels_gandalf_white
 
 
+def visualize_gandalf_dark(y):
+    global gandalf_needs_init, pixels_gandalf_dark
+    while True:
+        if gandalf_needs_init:
+            pixels_gandalf_dark = create_gradient(0, 0, 0, 0, 0.0, 0.0, 0.0, 220, 35)
+            gandalf_needs_init = False;
+        else:
+            try:
+                pixels_gandalf_dark = np.roll(pixels_gandalf_dark, 1, axis=1)
+            except NameError:
+                gandalf_needs_init = True
+                continue
+            break
+    return pixels_gandalf_dark
+
+
 def visualize_gandalf_proud(y):
     global gandalf_needs_init, pixels_gandalf_proud
     while True:
@@ -325,7 +341,7 @@ y_roll = np.random.rand(config['N_ROLLING_HISTORY'], samples_per_frame) / 1e16
 
 visualization_effect = visualize_spectrum
 effects = [visualize_spectrum, visualize_energy, visualize_scroll, visualize_gandalf_white, visualize_gandalf_proud,
-           visualize_gandalf_random]
+           visualize_gandalf_random, visualize_gandalf_dark]
 """Visualization effect to display on the LED strip"""
 
 n_frame = 0
