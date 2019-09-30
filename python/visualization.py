@@ -270,8 +270,9 @@ def microphone_update(audio_samples):
 
     vol = np.max(np.abs(y_data))
     if vol < config['MIN_VOLUME_THRESHOLD']:
-        led.pixels = np.tile(0, (4, config['N_PIXELS']))
-        led.update(config)
+        if config['TURN_OFF_ON_SILENCE']:
+            led.pixels = np.tile(0, (4, config['N_PIXELS']))
+            led.update(config)
     else:
         # Transform audio input into the frequency domain
         N = len(y_data)
