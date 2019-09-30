@@ -217,7 +217,7 @@ def visualize_gandalf_dark(y):
     global gandalf_needs_init, pixels_gandalf_dark
     while True:
         if gandalf_needs_init:
-            pixels_gandalf_dark = create_gradient(0, 0, 0, 0, 0.0, 0.0, 0.0, 220, 35)
+            pixels_gandalf_dark = np.tile(0, (4, config['N_PIXELS']))
             gandalf_needs_init = False;
         else:
             try:
