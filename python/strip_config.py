@@ -21,7 +21,7 @@ DEFAULT_CONFIG = {
     'N_PIXELS': N_PIXELS,
     'GAMMA_TABLE_PATH': os.path.join(os.path.dirname(__file__), 'gamma_table.npy'),
     'MIC_RATE': 48000,
-    'FPS': 40,
+    'FPS': 20,
     '_max_led_FPS': int(((N_PIXELS * 30e-6) + 50e-6) ** -1.0),
     'MIN_FREQUENCY': 200,
     'MAX_FREQUENCY': 4200,
